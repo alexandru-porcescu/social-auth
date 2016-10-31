@@ -17,7 +17,7 @@
 package apps
 
 import (
-	"github.com/beego/social-auth"
+	"github.com/alexandru-porcescu/social-auth"
 )
 
 type Weibo struct {
@@ -38,6 +38,11 @@ func (p *Weibo) GetPath() string {
 
 func (p *Weibo) GetIndentify(tok *social.Token) (string, error) {
 	return tok.GetExtra("uid"), nil
+}
+
+func (p *Weibo) GetSocialData(tok *social.Token) (*social.SocialData, error) {
+	id, err := p.GetIndentify(tok)
+	return &social.SocialData{Id: id}, err
 }
 
 var _ social.Provider = new(Weibo)

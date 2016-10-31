@@ -22,7 +22,7 @@ import (
 
 	"github.com/astaxie/beego/httplib"
 
-	"github.com/beego/social-auth"
+	"github.com/alexandru-porcescu/social-auth"
 )
 
 type Google struct {
@@ -41,7 +41,7 @@ func (p *Google) GetPath() string {
 	return "google"
 }
 
-func (p *Google) GetIndentify(tok *social.Token) (string, error) {
+func (p *Google) GetSocialData(tok *social.Token) (*social.SocialData, error) {
 	vals := make(map[string]interface{})
 
 	uri := "https://www.googleapis.com/userinfo/v2/me"
@@ -59,17 +59,20 @@ func (p *Google) GetIndentify(tok *social.Token) (string, error) {
 	decoder.UseNumber()
 
 	if err := decoder.Decode(&vals); err != nil {
-		return "", err
+		return nil, err
 	}
 	if vals["error"] != nil {
-		return "", fmt.Errorf("%v", vals["error"])
+		return nil, fmt.Errorf("%v", vals["error"])
 	}
 
-	if vals["id"] == nil {
-		return "", nil
+	sData := &social.SocialData{
+		Id: fmt.Sprint(vals["id"]),
+		Name: vals["name"],
+		NickName: vals["nickname"],
+		Email: vals["emails"][0]["value"],
 	}
 
-	return fmt.Sprint(vals["id"]), nil
+	return sData, nil
 }
 
 var _ social.Provider = new(Google)

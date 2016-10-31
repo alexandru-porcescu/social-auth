@@ -284,11 +284,11 @@ func (this *SocialAuth) ConnectAndLogin(ctx *context.Context, socialType SocialT
 		return "", nil, fmt.Errorf("unknown provider")
 	}
 
-	identify, err := p.GetIndentify(tk.Token)
+	socialData, err := p.GetSocialData(tk.Token)
 	if err != nil {
 		return "", nil, err
 	}
-	if len(identify) == 0 {
+	if len(socialData.Id) == 0 {
 		return "", nil, fmt.Errorf("empty identify")
 	}
 
@@ -296,7 +296,7 @@ func (this *SocialAuth) ConnectAndLogin(ctx *context.Context, socialType SocialT
 		Uid:      uid,
 		Type:     socialType,
 		Data:     tk,
-		Identify: identify,
+		Identify: socialData.Id,
 	}
 
 	if err := userSocial.Save(); err != nil {

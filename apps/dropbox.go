@@ -17,7 +17,7 @@
 package apps
 
 import (
-	"github.com/beego/social-auth"
+	"github.com/alexandru-porcescu/social-auth"
 )
 
 type Dropbox struct {
@@ -38,6 +38,11 @@ func (p *Dropbox) GetPath() string {
 
 func (p *Dropbox) GetIndentify(tok *social.Token) (string, error) {
 	return tok.GetExtra("uid"), nil
+}
+
+func (p *Dropbox) GetSocialData(tok *social.Token) (*social.SocialData, error) {
+	id, err := p.GetIndentify(tok)
+	return &social.SocialData{Id: id}, err
 }
 
 var _ social.Provider = new(Dropbox)

@@ -94,6 +94,13 @@ func (e *SocialTokenField) RawValue() interface{} {
 	return e.String()
 }
 
+type SocialData struct {
+	Id       string
+	Email 	 string
+	Name 	 string
+	NickName string
+}
+
 type UserSocial struct {
 	Id       int
 	Uid      int              `orm:"index"`

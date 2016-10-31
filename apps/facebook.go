@@ -23,7 +23,7 @@ import (
 
 	"github.com/astaxie/beego/httplib"
 
-	"github.com/beego/social-auth"
+	"github.com/alexandru-porcescu/social-auth"
 )
 
 type Facebook struct {
@@ -42,10 +42,10 @@ func (p *Facebook) GetPath() string {
 	return "facebook"
 }
 
-func (p *Facebook) GetIndentify(tok *social.Token) (string, error) {
+func (p *Facebook) GetSocialData(tok *social.Token) (*social.SocialData, error) {
 	vals := make(map[string]interface{})
 
-	uri := "https://graph.facebook.com/me?fields=id&access_token=" + url.QueryEscape(tok.AccessToken)
+	uri := "https://graph.facebook.com/me?fields=id,name,email,link&access_token=" + url.QueryEscape(tok.AccessToken)
 	req := httplib.Get(uri)
 	req.SetTransport(social.DefaultTransport)
 
@@ -63,14 +63,17 @@ func (p *Facebook) GetIndentify(tok *social.Token) (string, error) {
 	}
 
 	if vals["error"] != nil {
-		return "", fmt.Errorf("%v", vals["error"])
+		return nil, fmt.Errorf("%v", vals["error"])
 	}
 
-	if vals["id"] == nil {
-		return "", nil
+
+	sData := &social.SocialData{
+		Id: fmt.Sprint(vals["id"]),
+		Name: vals["name"],
+		Email: vals["email"],
 	}
 
-	return fmt.Sprint(vals["id"]), nil
+	return sData, nil
 }
 
 var _ social.Provider = new(Facebook)

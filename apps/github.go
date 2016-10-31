@@ -22,7 +22,7 @@ import (
 
 	"github.com/astaxie/beego/httplib"
 
-	"github.com/beego/social-auth"
+	"github.com/alexandru-porcescu/social-auth"
 )
 
 type Github struct {
@@ -70,6 +70,11 @@ func (p *Github) GetIndentify(tok *social.Token) (string, error) {
 	}
 
 	return fmt.Sprint(vals["id"]), nil
+}
+
+func (p *Github) GetSocialData(tok *social.Token) (*social.SocialData, error) {
+	id, err := p.GetIndentify(tok)
+	return &social.SocialData{Id: id}, err
 }
 
 var _ social.Provider = new(Github)

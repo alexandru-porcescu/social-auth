@@ -22,7 +22,7 @@ import (
 
 	"github.com/astaxie/beego/httplib"
 
-	"github.com/beego/social-auth"
+	"github.com/alexandru-porcescu/social-auth"
 )
 
 type QQ struct {
@@ -61,6 +61,11 @@ func (p *QQ) GetIndentify(tok *social.Token) (string, error) {
 	}
 
 	return vals.Get("openid"), nil
+}
+
+func (p *QQ) GetSocialData(tok *social.Token) (*social.SocialData, error) {
+	id, err := p.GetIndentify(tok)
+	return &social.SocialData{Id: id}, err
 }
 
 var _ social.Provider = new(QQ)

@@ -14,7 +14,7 @@ Connetction social accounts for beego.
 ### Installation
 
 ```
-go get github.com/beego/social-auth
+go get github.com/alexandru-porcescu/social-auth
 ```
 
 ### Features
@@ -25,7 +25,7 @@ go get github.com/beego/social-auth
 
 ### Example
 
-see [example project](https://github.com/beego/social-auth/tree/master/example).
+see [example project](https://github.com/alexandru-porcescu/social-auth/tree/master/example).
 
 Project in world:
 

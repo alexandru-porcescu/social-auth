@@ -21,7 +21,7 @@ import (
 
 	"github.com/astaxie/beego/orm"
 
-	"github.com/beego/social-auth"
+	"github.com/alexandru-porcescu/social-auth"
 )
 
 type BaseProvider struct {
@@ -54,12 +54,12 @@ func (p *BaseProvider) GetConfig() *social.Config {
 }
 
 func (p *BaseProvider) CanConnect(tok *social.Token, userSocial *social.UserSocial) (bool, error) {
-	identify, err := p.App.GetIndentify(tok)
+	socialData, err := p.App.GetSocialData(tok)
 	if err != nil {
 		return false, err
 	}
 
-	if err := social.UserSocials().Filter("Identify", identify).Filter("Type", p.App.GetType()).One(userSocial); err == orm.ErrNoRows {
+	if err := social.UserSocials().Filter("Identify", socialData.Id).Filter("Type", p.App.GetType()).One(userSocial); err == orm.ErrNoRows {
 		return true, nil
 	} else if err == nil {
 		return false, nil

@@ -25,8 +25,8 @@ import (
 	"github.com/astaxie/beego/context"
 	"github.com/astaxie/beego/orm"
 
-	"github.com/beego/social-auth"
-	"github.com/beego/social-auth/apps"
+	"github.com/alexandru-porcescu/social-auth"
+	"github.com/alexandru-porcescu/social-auth/apps"
 
 	// just use mysql driver for example
 	_ "github.com/go-sql-driver/mysql"
