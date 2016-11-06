@@ -259,6 +259,17 @@ func (this *SocialAuth) handleAccess(ctx *context.Context) {
 	}
 }
 
+func (this *SocialAuth) GetToken(ctx *context.Context, socialType SocialType) (SocialTokenField, error) {
+	tokKey := this.getSessKey(socialType, "token")
+	tk := SocialTokenField{}
+	value := ctx.Input.CruSession.Get(tokKey)
+	if err := tk.SetRaw(value); err != nil {
+		return tk, err
+	}
+
+	return tk, nil
+}
+
 // save user social info and login the user
 func (this *SocialAuth) ConnectAndLogin(ctx *context.Context, socialType SocialType, uid int) (string, *UserSocial, error) {
 	tokKey := this.getSessKey(socialType, "token")
@@ -273,9 +284,8 @@ func (this *SocialAuth) ConnectAndLogin(ctx *context.Context, socialType SocialT
 		}
 	}()
 
-	tk := SocialTokenField{}
-	value := ctx.Input.CruSession.Get(tokKey)
-	if err := tk.SetRaw(value); err != nil {
+	tk, err := this.GetToken(ctx, socialType);
+	if err != nil {
 		return "", nil, err
 	}
 

@@ -43,36 +43,41 @@ func (p *Facebook) GetPath() string {
 }
 
 func (p *Facebook) GetSocialData(tok *social.Token) (*social.SocialData, error) {
-	vals := make(map[string]interface{})
-
 	uri := "https://graph.facebook.com/me?fields=id,name,email,link&access_token=" + url.QueryEscape(tok.AccessToken)
 	req := httplib.Get(uri)
 	req.SetTransport(social.DefaultTransport)
 
 	resp, err := req.Response()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	decoder := json.NewDecoder(resp.Body)
 	decoder.UseNumber()
 
-	if err := decoder.Decode(&vals); err != nil {
-		return "", err
+	type response struct {
+		Id   string      `json:"id"`
+		Name   string     `json:"name"`
+		Email   string    `json:"email"`
+		Error   interface{}    `json:"error"`
 	}
 
-	if vals["error"] != nil {
-		return nil, fmt.Errorf("%v", vals["error"])
+	var result response
+
+	if err := decoder.Decode(&result); err != nil {
+		return nil, err
 	}
 
+	if result.Error != nil {
+		return nil, fmt.Errorf("%v", result.Error)
+	}
 
 	sData := &social.SocialData{
-		Id: fmt.Sprint(vals["id"]),
-		Name: vals["name"],
-		Email: vals["email"],
+		Id: result.Id,
+		Name: result.Name,
+		Email: result.Email,
 	}
-
 	return sData, nil
 }
 

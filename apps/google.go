@@ -42,7 +42,6 @@ func (p *Google) GetPath() string {
 }
 
 func (p *Google) GetSocialData(tok *social.Token) (*social.SocialData, error) {
-	vals := make(map[string]interface{})
 
 	uri := "https://www.googleapis.com/userinfo/v2/me"
 	req := httplib.Get(uri)
@@ -51,25 +50,41 @@ func (p *Google) GetSocialData(tok *social.Token) (*social.SocialData, error) {
 
 	resp, err := req.Response()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	decoder := json.NewDecoder(resp.Body)
 	decoder.UseNumber()
 
-	if err := decoder.Decode(&vals); err != nil {
+	type email struct {
+		Value   string     `json:"value"`
+		Type   string      `json:"type"`
+	}
+
+	type response struct {
+		Id   string        `json:"id"`
+		Name   string      `json:"name"`
+		NickName   string  `json:"nickname"`
+		Emails   []email   `json:"emails"`
+		Error   interface{} `json:"error"`
+	}
+
+	var result response
+
+	if err := decoder.Decode(&result); err != nil {
 		return nil, err
 	}
-	if vals["error"] != nil {
-		return nil, fmt.Errorf("%v", vals["error"])
+
+	if result.Error != nil {
+		return nil, fmt.Errorf("%v", result.Error)
 	}
 
 	sData := &social.SocialData{
-		Id: fmt.Sprint(vals["id"]),
-		Name: vals["name"],
-		NickName: vals["nickname"],
-		Email: vals["emails"][0]["value"],
+		Id: result.Id,
+		Name: result.Name,
+		NickName: result.NickName,
+		Email: result.Emails[0].Value,
 	}
 
 	return sData, nil
